@@ -1,0 +1,11 @@
+1.	An external stage is created over an S3 bucket. There are no changes in requirements to the external stage as provided by Snowflake.
+2.	Assuming that a suitable table already exists, a pipe is created with the special flag "auto_ingest=true" (detailed steps below).
+3.	Now this pipe will be bound to this stage location using an AWS SQS queue as a notification channel. This notification channel can be seen by doing a "SHOW STAGES" command and next to the stage to which the pipe was bound. (Special details on the SHOW STAGES command below).
+4.	This SQS ARN should then be set on the S3 bucket hosting the stage as a notification configuration for the CreatedObject event. This step is outside the purview of Snowflake and is done using AWS tools (SDK/CLI/Console).
+5.	Once the notification ARN has been set on the bucket, all new files created under the stage location will be loaded through the associated auto_ingest pipes for that stage to the respective tables as defined by the pipes.
+
+
+>create stage ext_stage url='s3://bucket_name' credentials=(aws_key_id='**************' aws_secret_key='*********************');
+>create pipe pipe2 auto_ingest=true as copy into t1 from @ext_stage;
+>show stages;
+>aws s3api get-bucket-notification-configuration --bucket bucket_name
