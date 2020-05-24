@@ -1,0 +1,53 @@
+As you all aware end of IBM Netezza Appliance is near, as IBM trying to figure out what the future is for Netezza as a client you might have lot of questions what are my options on on-premises and cloud.
+Currently for MPP databases closest options for Netezza are AWS redshift and Snowflake.
+
+Netezza to redshift aws provides aws schema conversion tool and as well as data migration agents to copy DDL and move data from Netezza to redshift.
+With snowflake you have to find a way to migrate ddl and data, there are plenty of ways, choose the right option is available for you.
+Good news is Netezza DDL’s are 90% compatible with snowflake with very little change.
+
+let’s make sure connectivity between snowflake and aws setup.
+
+
+1) setup storage integration between snowflake and your aws s3 account, this also requires setting up a IAM role, 
+Policy and setup trust relationships.
+
+CREATE STORAGE INTEGRATION - Snowflake Documentation 
+https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration.html
+
+ 
+
+2) create a warehouse
+Overview of Warehouses - Snowflake Documentation
+Warehouses are required for queries, as well as all DML operations, including loading data into tables. A warehouse is…
+docs.snowflake.net
+
+3) create database and schemas
+Databases, Tables & Views - Snowflake Documentation
+All data in Snowflake is maintained in databases. Each database consists of one or more schemas, which are logical…
+docs.snowflake.net
+migrate DDL’s
+
+Export Netezza ddls using nz_ddl script and run on snowflake schema you choose, might need to fix if you encounter 
+any errors during the object creation for snowflake compatibility check
+Table Design Considerations - Snowflake Documentation
+This topic provides best practices, general guidelines, and important considerations when designing and managing tables.…
+docs.snowflake.net
+
+Moving data to snowflake
+
+aws snowball service.
+if your on-premise Netezza appliance has enough storage capacity you can install aws cli and configure and upload 
+data to cloud (You can skip next 6 bullet points) , if not If your database size is less than 10Tb you can move the data by yourself by setting up few things.
+Setup an ec2 instance
+
+Create an EBS volume with the size you need and attach the volume to your existing ec2 instance and make the mount available
+Or you can create an EFS mount
+Download and install Netezza client software on EBS
+Once you setup run the following commands to export data
+nzsql-h <hostname> -u <user id > -p <Password> -d <dB name> -F. ‘|’ -t -r -c “ select * from tablename; “ -o /<EBS volume >/<output directory>/outputfilename.csv
+Once the export complete you can copy data to your s3 bucket
+aws s3 cp outputfilename.csv s3://<bucket name> — profile <profile name>
+Now in snowflake create a stage for the exported file
+And copy stage data to table
+That’s it.
+This is one of the option migrating data to cloud from on-premises.
