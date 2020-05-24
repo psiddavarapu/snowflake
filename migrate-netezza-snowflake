@@ -8,7 +8,8 @@ Good news is Netezza DDL’s are 90% compatible with snowflake with very little 
 let’s make sure connectivity between snowflake and aws setup.
 
 
-1) setup storage integration between snowflake and your aws s3 account, this also requires setting up a IAM role, 
+###Storage Inegration
+setup storage integration between snowflake and your aws s3 account, this also requires setting up a IAM role, 
 Policy and setup trust relationships.
 
 CREATE STORAGE INTEGRATION - Snowflake Documentation 
@@ -16,24 +17,17 @@ https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration.html
 
  
 
-2) create a warehouse
-Overview of Warehouses - Snowflake Documentation
-Warehouses are required for queries, as well as all DML operations, including loading data into tables. A warehouse is…
-docs.snowflake.net
+### create a warehouse
+https://docs.snowflake.com/en/user-guide/warehouses-overview.html
 
-3) create database and schemas
-Databases, Tables & Views - Snowflake Documentation
-All data in Snowflake is maintained in databases. Each database consists of one or more schemas, which are logical…
-docs.snowflake.net
-migrate DDL’s
+### create database and schemas
+https://docs.snowflake.com/en/user-guide/databases.html
 
 Export Netezza ddls using nz_ddl script and run on snowflake schema you choose, might need to fix if you encounter 
 any errors during the object creation for snowflake compatibility check
-Table Design Considerations - Snowflake Documentation
-This topic provides best practices, general guidelines, and important considerations when designing and managing tables.…
-docs.snowflake.net
+https://docs.snowflake.com/en/user-guide/table-considerations.html
 
-Moving data to snowflake
+###Moving data to snowflake
 
 aws snowball service.
 if your on-premise Netezza appliance has enough storage capacity you can install aws cli and configure and upload 
